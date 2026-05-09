@@ -36,9 +36,27 @@ prefijo(L,P) :- append(P,_,L).
 sufijo(L, S) :- append(_,S,L).
 
 % sublista(+L,?SL)
+sublista(L, SL) :- 
+    sufijo(L,S), 
+    prefijo(S,SL).
 
 % insertar(?X,+L,?LX)
+insertar(X,L,LX) :- 
+    prefijo(L,P), 
+    sufijo(L,S), 
+    append(P,S,L), 
+    append(P,[X|S],LX).
 
 % permutacion(+L,?P)
+permutacion([],[]).
+permutacion(L,[E|P]) :- 
+    append(L1,[E|L2],L), 
+    append(L1,L2,L3), 
+    permutacion(L3,P).
 
 % capicua(?Lista)
+capicua([]).
+capicua([_]).
+capicua([H|T]) :- 
+    append(M, [H], T), 
+    capicua(M). 
