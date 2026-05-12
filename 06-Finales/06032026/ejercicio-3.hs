@@ -1,3 +1,4 @@
+import Data.List (union)
 data AdjAB a = Raiz a [AB a] | Adj [AB a]
 data AB a = Nil | Hoja a | Arb a (AB a) (AB a)
 
@@ -49,10 +50,12 @@ recAdjAB cRaiz cAdj cNil cHoja cArb adjs = case adjs of
     Raiz x abs -> cRaiz x abs (map (recAB cNil cHoja cArb) abs)
     Adj abs    -> cAdj abs (map (recAB cNil cHoja cArb) abs)
 
-ordenado :: AdjAB a -> Bool
+ordenado :: Ord a => AdjAB a -> Bool
 ordenado = recAdjAB
-    (\x abs absRec -> True)
-    (\abs absRec -> True)
+    (\x abs absRec -> (foldr (&&) True (union (map (\ab -> ordAB x ab (>)) abs) absRec)))
+    (\abs absRec -> foldr (&&) True absRec)
     True
     (\_ -> True)
-    (\x izqRec derRec izq der -> True)
+    (\x izq der izqRec derRec -> (ordAB x izq (>))&&(ordAB x der (<))&&izqRec&&derRec)
+    where
+        ordAB = \x sub f -> case sub of Nil -> True; Hoja y -> f x y; Arb y _ _ -> f x y
