@@ -1,21 +1,25 @@
 comprimido([], []).
+comprimido([H|T], R) :- 
+    aux_simple(H, T, R).
+comprimido([H|T],[c(H,K)|R]) :- 
+    aux_comp(H, T, K, R).
 
-comprimido([H|T], Salida) :-
-    obtener_bloque_simple(H, T, Bloque, Resto),
-    append(Bloque, T2, Salida),
-    comprimido(Resto, T2).
+% aux_simple(+H,+T,-R).
+aux_simple(H, [], [H]).
+aux_simple(H, [H|T], [H|R]) :- 
+    aux_simple(H, T, R).
+aux_simple(H1, [H2|T2], [H1|T3]) :- 
+    H1 \= H2, 
+    comprimido([H2|T2],T3).
 
-comprimido([H|T], [c(H, K)|T2]) :-
-    comprimido(H, T, K, Resto),
-    comprimido(Resto, T2).
+% aux_comp(+H,+T,-K,-R).
+aux_comp(_,[],1,[]).
+aux_comp(H,[H|T],K,R) :- 
+    aux_comp(H, T, K1, R), 
+    K is K1+1.
+aux_comp(H1,[H2|T],1,R) :- 
+    H1\=H2, 
+    comprimido([H2|T],R).
 
-comprimido(H, [H|T], K, Resto) :- 
-    comprimido(H, T, K1, Resto), 
-    K is K1 + 1.
-comprimido(H, [X|T], 1, [X|T]) :- H \= X.
-comprimido(_, [], 1, []).
+% solo es reversible en L1 si L2 no contiene elementos de la forma c(_,_), dado que aux_comp no es reversible en K.
 
-obtener_bloque_simple(H, [H|T], [H|RestoBloque], Resto) :-
-    obtener_bloque_simple(H, T, RestoBloque, Resto).
-obtener_bloque_simple(H, [X|T], [H], [X|T]) :- H \= X.
-obtener_bloque_simple(H, [], [H], []).
